@@ -1,0 +1,18 @@
+#check for CN collision
+
+if (($($data.CommonName))
+	$strFilter = "(cn=$($data.CommonName))"
+    $objDomain = New-Object System.DirectoryServices.DirectoryEntry #("LDAP://dc=lawnet, dc=lcl")
+    $objSearcher = New-Object System.DirectoryServices.DirectorySearcher
+    $objSearcher.SearchRoot = $objDomain
+    $objSearcher.Filter = $strFilter
+    $objSearcher.SearchScope = "Subtree"
+    #$Result = $objSearcher = New-Object System.DirectoryServices.SearchResult
+    #$objSearcher.FindOne()
+    
+    if ($objSearcher.FindOne() -ne $null){
+        #DEBUG Write-Host "Found one"
+		EmailHelp($data.Username, "Admit Creation CN error", "Account: " + $data.Username + "has a CN that already exists. Please manually create account to avoid CN collision") 
+        return $false    
+    }
+	
